@@ -1,7 +1,7 @@
 package com.gcorp;
 
 /**
- * Hello world!
+ * HTTP server!
  */
 public class App {
     public static void main(String[] args) {
