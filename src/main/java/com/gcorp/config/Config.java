@@ -1,10 +1,12 @@
 package com.gcorp.config;
 
-public class Configuration {
+public class Config {
   private int port;
   private String root;
 
-  public Configuration(int port, String root) {
+  public Config() {}
+
+  public Config(int port, String root) {
     this.port = port;
     this.root = root;
   }

@@ -1,4 +1,4 @@
 {
   "port": 6969,
-  "public": "/"
+  "root": "/www"
 }
