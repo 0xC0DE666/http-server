@@ -1,6 +1,5 @@
 package com.gcorp.config;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -19,16 +18,12 @@ public class ConfigManager {
 
   public void loadConfig(String path) {
     FileReader reader;
+    StringBuffer buffer;
     try {
       reader = new FileReader(path);
-    } catch (FileNotFoundException e) {
-      throw new ConfigException(e);
-    }
+      buffer = new StringBuffer();
 
-    var buffer = new StringBuffer();
-    int i;
-
-    try {
+      int i;
       while ((i = reader.read()) != -1) {
         buffer.append((char) i);
       }
