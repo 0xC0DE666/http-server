@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class Json {
+
   private static ObjectMapper mapper = defaultMapper();
 
   private static ObjectMapper defaultMapper() {

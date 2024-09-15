@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.gcorp.util.Json;
 
 public class ConfigManager {
+
   private static ConfigManager instance;
   private static Config config;
   
