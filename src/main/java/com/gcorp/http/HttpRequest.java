@@ -20,4 +20,15 @@ public class HttpRequest extends HttpMessage {
     }
     throw new HttpParsingException(HttpStatusCode.NOT_IMPLEMENTED);
   }
+
+  public String getTarget() {
+    return target;
+  }
+
+  void setTarget(String target) throws HttpParsingException {
+    if (target == null || target.length() == 0) {
+      throw new HttpParsingException(HttpStatusCode.INTERNAL_SERVER_ERROR);
+    }
+    this.target = target;
+  }
 }

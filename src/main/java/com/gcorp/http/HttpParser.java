@@ -48,6 +48,7 @@ public class HttpParser {
         }
         else if (!target) {
           logger.debug("request line TARGET: {}", buffer.toString());
+          req.setTarget(buffer.toString());
           target = true;
         } else {
           throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);

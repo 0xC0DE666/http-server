@@ -1,6 +1,7 @@
 package com.gcorp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -34,7 +35,11 @@ public class HttpParserTest {
   public void parseRequest_success() {
     try {
       HttpRequest actual = parser.parseRequest(getRequest());
+
+      assertNotNull(actual.getMethod());
+      assertNotNull(actual.getTarget());
       assertEquals(HttpMethod.GET, actual.getMethod());
+      assertEquals("/", actual.getTarget());
     } catch (HttpParsingException e) {
       fail(e);
     }
