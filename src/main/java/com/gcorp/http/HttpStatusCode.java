@@ -10,11 +10,11 @@ public enum HttpStatusCode {
   NOT_IMPLEMENTED(501, "Not Implemented"),
   ;
 
-  public final int STATUS_CODE;
+  public final int CODE;
   public final String MESSAGE;
 
   HttpStatusCode(int code, String message) {
-    this.STATUS_CODE = code;
+    this.CODE = code;
     this.MESSAGE = message;
   }
 }

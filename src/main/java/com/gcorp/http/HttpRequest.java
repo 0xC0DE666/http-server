@@ -11,8 +11,13 @@ public class HttpRequest extends HttpMessage {
       return method;
   }
 
-  // TODO: remove public 
-  public void setMethod(HttpMethod method) {
-      this.method = method;
+  void setMethod(String name) throws HttpParsingException {
+    for (HttpMethod method : HttpMethod.values()) {
+      if (name.equals(method.name())) {
+        this.method = method;
+        return;
+      }
+    }
+    throw new HttpParsingException(HttpStatusCode.NOT_IMPLEMENTED);
   }
 }
