@@ -1,8 +1,6 @@
 package com.gcorp.core;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -10,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gcorp.config.Config;
-import com.gcorp.util.Http;
 
 public class ConnectionManager extends Thread {
 
@@ -20,7 +17,6 @@ public class ConnectionManager extends Thread {
   private ServerSocket socket;
 
   public ConnectionManager(Config config) throws IOException {
-    super();
     this.config = config; 
     socket = new ServerSocket(config.getPort());
   }
@@ -28,19 +24,23 @@ public class ConnectionManager extends Thread {
   @Override
   public void run() {
     try {
-      Socket client = socket.accept();
-      logger.info("new client: " + client.getInetAddress());
+      while (socket.isBound() && !socket.isClosed()) {
+        Socket conn = socket.accept();
+        logger.info("new client: " + conn.getInetAddress());
+        // new ClientHandler(client).run(); this runs on the same thread for some reason...
+        var client = new ClientHandler(conn);
+        client.start();
+      }
+    } catch (IOException e) {
+      logger.error("error setting up client handler: ", e);
+    } finally {
+      close();
+    }
+  }
 
-      InputStream in = client.getInputStream();
-      OutputStream out = client.getOutputStream();
-
-      String res = Http.response(Http.landing());
-      out.write(res.getBytes());
-
-      in.close();
-      out.close();
-      client.close();
-      socket.close();
+  private void close() {
+    try {
+      if (socket != null) socket.close();
     } catch (IOException e) {
       e.printStackTrace();
     }
