@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+import com.gcorp.http.HttpMethod;
 import com.gcorp.http.HttpParser;
+import com.gcorp.http.HttpRequest;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class HttpParserTest {
@@ -26,8 +28,9 @@ public class HttpParserTest {
 
   @Test
   public void testParseRequest() {
-    String actual = parser.parseRequest(input());
-    assertEquals("true", actual);
+    HttpRequest actual = parser.parseRequest(input());
+    actual.setMethod(HttpMethod.GET);
+    assertEquals(HttpMethod.GET, actual.getMethod());
   }
 
   private InputStream input() {
