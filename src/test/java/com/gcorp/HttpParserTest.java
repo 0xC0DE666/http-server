@@ -41,15 +41,54 @@ public class HttpParserTest {
   }
 
   @Test
-  public void parseRequest_fail_bad_method() {
+  public void parseRequest_failInvalidMethod() {
     try {
-      parser.parseRequest(badGetRequest());
+      parser.parseRequest(badGetRequest_invalidMethod());
       fail();
     } catch (HttpParsingException e) {
       assertEquals(HttpStatusCode.NOT_IMPLEMENTED.CODE, e.getStatus().CODE);
     }
   }
 
+  @Test
+  public void parseRequest_failMethodTooLong() {
+    try {
+      parser.parseRequest(badGetRequest_methodTooLong());
+      fail();
+    } catch (HttpParsingException e) {
+      assertEquals(HttpStatusCode.NOT_IMPLEMENTED.CODE, e.getStatus().CODE);
+    }
+  }
+
+  @Test
+  public void parseRequest_failMoreThan3PartsInRequestLine() {
+    try {
+      parser.parseRequest(badGetRequest_moreThan3PartsInRequestLine());
+      fail();
+    } catch (HttpParsingException e) {
+      assertEquals(HttpStatusCode.BAD_REQUEST.CODE, e.getStatus().CODE);
+    }
+  }
+
+  @Test
+  public void parseRequest_failEmptyRequestLine() {
+    try {
+      parser.parseRequest(badGetRequest_emptyRequestLine());
+      fail();
+    } catch (HttpParsingException e) {
+      assertEquals(HttpStatusCode.BAD_REQUEST.CODE, e.getStatus().CODE);
+    }
+  }
+
+  @Test
+  public void parseRequest_noLF() {
+    try {
+      parser.parseRequest(badGetRequest_noLF());
+      fail();
+    } catch (HttpParsingException e) {
+      assertEquals(HttpStatusCode.BAD_REQUEST.CODE, e.getStatus().CODE);
+    }
+  }
 
   private InputStream getRequest() {
     String raw =
@@ -77,18 +116,28 @@ public class HttpParserTest {
     return in;
   }
 
-  private InputStream badGetRequest() {
-    String raw =
-      "GeT / HTTP/1.1\r\n" + // invalid method
-      "Host: localhost:6969\r\n" +
-      "Accept-Encoding: gzip, deflate, br, zstd\r\n" +
-      "Accept-Language: en-GB,en;q=0.9\r\n" +
-      "dnt: 1\r\n" +
-      "sec-gpc: 1\r\n";
-
-    InputStream in = new ByteArrayInputStream(raw.getBytes(StandardCharsets.US_ASCII));
-
-    return in;
+  private InputStream badGetRequest_invalidMethod() {
+    String raw = "G_T / HTTP/1.1\r\n"; // invalid method
+    return new ByteArrayInputStream(raw.getBytes(StandardCharsets.US_ASCII));
   }
 
+  private InputStream badGetRequest_methodTooLong() {
+    String raw = "G________T / HTTP/1.1\r\n"; // method too long
+    return new ByteArrayInputStream(raw.getBytes(StandardCharsets.US_ASCII));
+  }
+
+  private InputStream badGetRequest_moreThan3PartsInRequestLine() {
+    String raw = "GET / HTTP/1.1 ABC\r\n"; // more than 3 parts in request line
+    return new ByteArrayInputStream(raw.getBytes(StandardCharsets.US_ASCII));
+  }
+
+  private InputStream badGetRequest_emptyRequestLine() {
+    String raw = "\r\n"; // empty request line
+    return new ByteArrayInputStream(raw.getBytes(StandardCharsets.US_ASCII));
+  }
+
+  private InputStream badGetRequest_noLF() {
+    String raw = "GET / HTTP/1.1\r"; // CR no LF
+    return new ByteArrayInputStream(raw.getBytes(StandardCharsets.US_ASCII));
+  }
 }

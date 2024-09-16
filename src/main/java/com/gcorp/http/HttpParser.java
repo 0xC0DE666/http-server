@@ -49,16 +49,30 @@ public class HttpParser {
         else if (!target) {
           logger.debug("request line TARGET: {}", buffer.toString());
           target = true;
+        } else {
+          throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
         }
         buffer.delete(0, buffer.length());
       } else {
         buffer.append((char) _byte);
+        if (!method && buffer.length() == HttpMethod.MAX_LENGTH) {
+          throw new HttpParsingException(HttpStatusCode.NOT_IMPLEMENTED);
+        }
       }
 
       if (_byte == CR) {
         _byte = reader.read();
+
+        if (_byte != LF) {
+          throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
+        }
+
         if (_byte == LF) {
           logger.debug("request line VERSION: {}", buffer.toString());
+
+          if (!method || !target) {
+            throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
+          }
           return;
         }
       }
