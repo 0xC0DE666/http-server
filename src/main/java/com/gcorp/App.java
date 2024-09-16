@@ -2,6 +2,9 @@ package com.gcorp;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gcorp.config.ConfigManager;
 import com.gcorp.core.ConnectionManager;
 
@@ -10,20 +13,22 @@ import com.gcorp.core.ConnectionManager;
  */
 public class App {
 
-    public static void main(String[] args) {
-      ConfigManager.getInstance().loadConfig("src/main/resources/config.json");
+  private final static Logger logger = LoggerFactory.getLogger(App.class);
 
-      var conf = ConfigManager.getInstance().getConfig();
-      try {
-        var connMan = new ConnectionManager(conf);
-        connMan.start();
-      } catch (IOException e) {
-        // TODO: handle properly later
-        e.printStackTrace();
-      }
+  public static void main(String[] args) {
+    ConfigManager.getInstance().loadConfig("src/main/resources/config.json");
 
-      System.out.println("Server listening...");
-      System.out.println("port: " + conf.getPort());
-      System.out.println("web root: " + conf.getRoot());
+    var conf = ConfigManager.getInstance().getConfig();
+    try {
+      var connMan = new ConnectionManager(conf);
+      connMan.start();
+    } catch (IOException e) {
+      // TODO: handle properly later
+      e.printStackTrace();
     }
+
+    logger.info("Server listening...");
+    logger.info("port: " + conf.getPort());
+    logger.info("web root: " + conf.getRoot());
+  }
 }

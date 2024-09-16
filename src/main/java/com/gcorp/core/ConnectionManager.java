@@ -6,10 +6,15 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gcorp.config.Config;
 import com.gcorp.util.Http;
 
 public class ConnectionManager extends Thread {
+
+  private final static Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
 
   private Config config;
   private ServerSocket socket;
@@ -24,7 +29,7 @@ public class ConnectionManager extends Thread {
   public void run() {
     try {
       Socket client = socket.accept();
-      System.out.println("new client: " + client.getInetAddress().toString());
+      logger.info("new client: " + client.getInetAddress());
 
       InputStream in = client.getInputStream();
       OutputStream out = client.getOutputStream();
