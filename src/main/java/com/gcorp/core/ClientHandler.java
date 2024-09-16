@@ -33,7 +33,6 @@ public class ClientHandler extends Thread {
     try {
       String res = Http.response(Http.landing());
       out.write(res.getBytes());
-      Thread.sleep(2000); // TODO: delete
       logger.info("reguest handled: " + socket.getInetAddress());
     } catch (Exception e) {
       logger.error("error handling client request: ", e);

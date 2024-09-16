@@ -4,7 +4,7 @@ public class Http {
 
   public static String response(String html) {
     StringBuilder buffer = new StringBuilder();
-    final String CRLF = "\n\r"; // 13, 10 ASCII
+    final String CRLF = "\r\n"; // 13, 10 ASCII
 
     buffer.append("HTTP/1.1 200 OK");
     buffer.append(CRLF);
