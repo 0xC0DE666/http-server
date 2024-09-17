@@ -66,8 +66,8 @@ public class HttpVersionTest {
   @Test
   public void getVersion_successPartial() {
     var partials = new ArrayList<List<String>>();
-    partials.add(Arrays.asList("HTTP/0.1", "HTTP/0.9"));
-    partials.add(Arrays.asList("HTTP/1.3", "HTTP/1.1"));
+    partials.add(Arrays.asList("HTTP/0.1", HttpVersion.HTTP_0_9.LITTERAL));
+    partials.add(Arrays.asList("HTTP/1.3", HttpVersion.HTTP_1_1.LITTERAL));
 
     partials.forEach((tuple) -> {
       try {
