@@ -1,5 +1,8 @@
 package com.gcorp.http.models;
 
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.Set;
 import com.gcorp.http.enums.HttpMethod;
 import com.gcorp.http.enums.HttpStatusCode;
 import com.gcorp.http.enums.HttpVersion;
@@ -10,8 +13,8 @@ public class HttpRequest extends HttpMessage {
   private HttpMethod method;
   private String target;
   private HttpVersion version;
-
   private String literalVersion;
+  private HashMap<String, String> headers = new HashMap<>();
 
   public HttpMethod getMethod() {
     return method;
@@ -50,5 +53,17 @@ public class HttpRequest extends HttpMessage {
 
   public String getLiteralVersion() {
     return literalVersion;
+  }
+
+  public Optional<String> getHeader(String key) {
+    return Optional.ofNullable(this.headers.get(key));
+  }
+
+  public void putHeader(String key, String value) {
+    this.headers.put(key, value);
+  }
+
+  public Set<String> getHeaders() {
+    return this.headers.keySet();
   }
 }

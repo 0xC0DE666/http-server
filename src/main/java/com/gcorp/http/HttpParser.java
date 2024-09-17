@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.gcorp.http.enums.HttpMethod;
@@ -26,12 +27,12 @@ public class HttpParser {
     HttpRequest req = new HttpRequest();
     try {
       parseRequestLine(reader, req);
+      parseHeaders(reader, req);
+      // parseBody(reader, req);
     } catch (IOException e) {
       // TODO: handle this
       e.printStackTrace();
     }
-    // parseHeaders(reader, req);
-    // parseBody(reader, req);
 
     return req;
   }
@@ -89,8 +90,52 @@ public class HttpParser {
     }
   }
 
-  private void parseHeaders(InputStreamReader reader, HttpRequest req) {
+  private void parseHeaders(InputStreamReader reader, HttpRequest req)
+      throws IOException, HttpParsingException {
+    var buffer = new StringBuilder();
+    int _byte;
+    var crlf = false;
 
+    while ((_byte = reader.read()) >= 0) {
+
+      if (_byte == CR) {
+        _byte = reader.read();
+
+        if (_byte == LF) {
+          if (!crlf) {
+            crlf = true;
+            parseHeader(buffer, req);
+            buffer.delete(0, buffer.length());
+          } else {
+            return;
+          }
+        } else {
+          throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
+        }
+      } else {
+        crlf = false;
+        buffer.append((char) _byte);
+      }
+    }
+  }
+
+  private void parseHeader(StringBuilder builder, HttpRequest req) throws HttpParsingException {
+    var header = builder.toString();
+    // var pattern = Pattern.compile(
+    // "^(?<name>[!#$%&’*+\\-./^_‘|˜\\dA-Za-z]+):\\s?(?<value>[!#$%&’*+\\-./^_‘|˜(),:;<=>?@[\\\\]{}
+    // \\dA-Za-z]+)\\s?$"//
+    // );
+    var pattern = Pattern.compile("(?m)^([^:]+):\\s*(.+)$");
+
+    var match = pattern.matcher(header);
+
+    if (!match.matches()) {
+      throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
+    }
+
+    var key = match.group(1);
+    var value = match.group(2);
+    req.putHeader(key, value);
   }
 
   private void parseBody(InputStreamReader reader, HttpRequest req) {

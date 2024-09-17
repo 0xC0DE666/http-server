@@ -106,11 +106,19 @@ public class HttpParserTest {
       assertNotNull(actual.getMethod());
       assertNotNull(actual.getTarget());
       assertNotNull(actual.getVersion());
+      assertNotNull(actual.getHeaders());
 
+      // status line
       assertEquals(HttpMethod.GET, actual.getMethod());
       assertEquals("/", actual.getTarget());
       assertEquals(HttpVersion.HTTP_1_1.LITTERAL, actual.getVersion().LITTERAL);
       assertEquals(HttpVersion.HTTP_1_1.LITTERAL, actual.getLiteralVersion());
+
+      // headers
+      assertEquals(17, actual.getHeaders().size());
+      assertEquals("localhost:6969", actual.getHeader("Host").get());
+      assertEquals("keep-alive", actual.getHeader("Connection").get());
+      assertEquals("1", actual.getHeader("dnt").get());
     } catch (HttpParsingException e) {
       fail(e);
     }
