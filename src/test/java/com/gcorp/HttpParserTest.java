@@ -102,6 +102,7 @@ public class HttpParserTest {
     try {
       HttpRequest actual = parser.parseRequest(getRequest());
 
+      assertNotNull(actual);
       assertNotNull(actual.getMethod());
       assertNotNull(actual.getTarget());
       assertNotNull(actual.getVersion());
