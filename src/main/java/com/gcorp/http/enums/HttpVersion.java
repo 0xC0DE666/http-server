@@ -30,7 +30,7 @@ public enum HttpVersion {
     var doubleMatch = doubleDigit.matcher(literal);
 
     if (!sinlgeMatch.find() && !doubleMatch.find()) {
-      throw new BadHttpVersionException();
+      throw new BadHttpVersionException("Malformed HTTP version.");
     }
 
     int major = doubleMatch.find()//

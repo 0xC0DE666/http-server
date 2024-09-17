@@ -78,6 +78,16 @@ public class HttpParserTest {
   }
 
   @Test
+  public void parseRequest_failMalformedVersion() {
+    try {
+      parser.parseRequest(badGetRequest_malformedVersion());
+      fail();
+    } catch (HttpParsingException e) {
+      assertEquals(HttpStatusCode.BAD_REQUEST.CODE, e.getStatus().CODE);
+    }
+  }
+
+  @Test
   public void parseRequest_failBadVersion() {
     try {
       parser.parseRequest(badGetRequest_badVersion());
@@ -86,7 +96,6 @@ public class HttpParserTest {
       assertEquals(HttpStatusCode.BAD_REQUEST.CODE, e.getStatus().CODE);
     }
   }
-
 
   @Test
   public void parseRequest_success() {
@@ -147,8 +156,13 @@ public class HttpParserTest {
     return new ByteArrayInputStream(raw.getBytes(StandardCharsets.US_ASCII));
   }
 
+  private InputStream badGetRequest_malformedVersion() {
+    String raw = "GET / HTTP/\r\n"; // Malformed version
+    return new ByteArrayInputStream(raw.getBytes(StandardCharsets.US_ASCII));
+  }
+
   private InputStream badGetRequest_badVersion() {
-    String raw = "GET / HTTP/9\r"; // CR no LF
+    String raw = "GET / HTTP/9\r\n"; // bad http version
     return new ByteArrayInputStream(raw.getBytes(StandardCharsets.US_ASCII));
   }
 }
