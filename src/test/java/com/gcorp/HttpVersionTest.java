@@ -15,7 +15,7 @@ import com.gcorp.http.exceptions.BadHttpVersionException;
 public class HttpVersionTest {
 
   @Test
-  public void getVersion_failBadVersion() {
+  public void getVersion_failMalformedVersion() {
     try {
       HttpVersion.get("HTTP/").orElseThrow();
       fail();
@@ -25,7 +25,7 @@ public class HttpVersionTest {
   }
 
   @Test
-  public void getVersion_failNoVersionFound() {
+  public void getVersion_failUnkownVersion() {
     try {
       HttpVersion.get("TTP/9.9").orElseThrow();
       fail();
