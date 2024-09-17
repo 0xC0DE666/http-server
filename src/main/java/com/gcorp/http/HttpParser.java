@@ -45,26 +45,6 @@ public class HttpParser {
 
     while ((_byte = reader.read()) >= 0) {
 
-      if (_byte == SP) {
-        if (!method) {
-          logger.debug("request line METHOD: {}", buffer.toString());
-          req.setMethod(buffer.toString());
-          method = true;
-        } else if (!target) {
-          logger.debug("request line TARGET: {}", buffer.toString());
-          req.setTarget(buffer.toString());
-          target = true;
-        } else {
-          throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
-        }
-        buffer.delete(0, buffer.length());
-      } else {
-        buffer.append((char) _byte);
-        if (!method && buffer.length() == HttpMethod.MAX_LENGTH) {
-          throw new HttpParsingException(HttpStatusCode.NOT_IMPLEMENTED);
-        }
-      }
-
       if (_byte == CR) {
         _byte = reader.read();
 
@@ -84,6 +64,26 @@ public class HttpParser {
             throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
           }
           return;
+        }
+      }
+
+      if (_byte == SP) {
+        if (!method) {
+          logger.debug("request line METHOD: {}", buffer.toString());
+          req.setMethod(buffer.toString());
+          method = true;
+        } else if (!target) {
+          logger.debug("request line TARGET: {}", buffer.toString());
+          req.setTarget(buffer.toString());
+          target = true;
+        } else {
+          throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
+        }
+        buffer.delete(0, buffer.length());
+      } else {
+        buffer.append((char) _byte);
+        if (!method && buffer.length() == HttpMethod.MAX_LENGTH) {
+          throw new HttpParsingException(HttpStatusCode.NOT_IMPLEMENTED);
         }
       }
     }

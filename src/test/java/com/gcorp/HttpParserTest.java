@@ -109,6 +109,7 @@ public class HttpParserTest {
       assertEquals(HttpMethod.GET, actual.getMethod());
       assertEquals("/", actual.getTarget());
       assertEquals(HttpVersion.HTTP_1_1.LITTERAL, actual.getVersion().LITTERAL);
+      assertEquals(HttpVersion.HTTP_1_1.LITTERAL, actual.getLiteralVersion());
     } catch (HttpParsingException e) {
       fail(e);
     }
