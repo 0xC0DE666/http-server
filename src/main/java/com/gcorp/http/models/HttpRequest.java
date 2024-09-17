@@ -9,8 +9,9 @@ import com.gcorp.http.exceptions.HttpParsingException;
 public class HttpRequest extends HttpMessage {
   private HttpMethod method;
   private String target;
-  private String version;
-  private HttpVersion compatibleVersion;
+  private HttpVersion version;
+
+  private String literalVersion;
 
   public HttpMethod getMethod() {
     return method;
@@ -37,17 +38,17 @@ public class HttpRequest extends HttpMessage {
     this.target = target;
   }
 
-  public String getVersion() {
+  public HttpVersion getVersion() {
     return version;
   }
 
-  public HttpVersion getCompatibleVersion() {
-    return compatibleVersion;
+  public void setVersion(String version) throws BadHttpVersionException, HttpParsingException {
+    this.literalVersion = version;
+    this.version = HttpVersion.get(version)
+        .orElseThrow(() -> new HttpParsingException(HttpStatusCode.BAD_REQUEST));
   }
 
-  public void setVersion(String version) throws BadHttpVersionException, HttpParsingException {
-    this.version = version;
-    this.compatibleVersion = HttpVersion.get(version)
-        .orElseThrow(() -> new HttpParsingException(HttpStatusCode.BAD_REQUEST));
+  public String getLiteralVersion() {
+    return literalVersion;
   }
 }

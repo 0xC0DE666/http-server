@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.gcorp.http.enums.HttpMethod;
 import com.gcorp.http.enums.HttpStatusCode;
-import com.gcorp.http.enums.HttpVersion;
+import com.gcorp.http.exceptions.BadHttpVersionException;
 import com.gcorp.http.exceptions.HttpParsingException;
 import com.gcorp.http.models.HttpRequest;
 
@@ -38,21 +36,21 @@ public class HttpParser {
     return req;
   }
 
-  private void parseRequestLine(InputStreamReader reader, HttpRequest req) throws IOException, HttpParsingException {
+  private void parseRequestLine(InputStreamReader reader, HttpRequest req)
+      throws IOException, HttpParsingException {
     StringBuilder buffer = new StringBuilder();
     int _byte;
     boolean method = false;
     boolean target = false;
 
-    while((_byte = reader.read()) >= 0) {
+    while ((_byte = reader.read()) >= 0) {
 
       if (_byte == SP) {
         if (!method) {
           logger.debug("request line METHOD: {}", buffer.toString());
           req.setMethod(buffer.toString());
           method = true;
-        }
-        else if (!target) {
+        } else if (!target) {
           logger.debug("request line TARGET: {}", buffer.toString());
           req.setTarget(buffer.toString());
           target = true;
@@ -76,6 +74,11 @@ public class HttpParser {
 
         if (_byte == LF) {
           logger.debug("request line VERSION: {}", buffer.toString());
+          try {
+            req.setVersion(buffer.toString());
+          } catch (BadHttpVersionException e) {
+            throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
+          }
 
           if (!method || !target) {
             throw new HttpParsingException(HttpStatusCode.BAD_REQUEST);
@@ -83,7 +86,7 @@ public class HttpParser {
           return;
         }
       }
-    }  
+    }
   }
 
   private void parseHeaders(InputStreamReader reader, HttpRequest req) {

@@ -1,7 +1,7 @@
 package com.gcorp.http.enums;
 
 public enum HttpMethod {
-  GET, HEAD;
+  HEAD, GET, POST, PUT, DELETE;
 
   public static final int MAX_LENGTH;
 

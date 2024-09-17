@@ -16,8 +16,8 @@ public enum HttpVersion {
   public final int MAJOR;
   public final int MINOR;
 
-  HttpVersion(String litteral, int major, int minor) {
-    this.LITTERAL = litteral;
+  HttpVersion(String literal, int major, int minor) {
+    this.LITTERAL = literal;
     this.MAJOR = major;
     this.MINOR = minor;
   }
@@ -25,9 +25,9 @@ public enum HttpVersion {
   private static final Pattern singleDigit = Pattern.compile("^HTTP/(?<major>\\d+)");
   private static final Pattern doubleDigit = Pattern.compile("^HTTP/(?<major>\\d+).(?<minor>\\d+)");
 
-  public static Optional<HttpVersion> get(String litteral) throws BadHttpVersionException {
-    var sinlgeMatch = singleDigit.matcher(litteral);
-    var doubleMatch = doubleDigit.matcher(litteral);
+  public static Optional<HttpVersion> get(String literal) throws BadHttpVersionException {
+    var sinlgeMatch = singleDigit.matcher(literal);
+    var doubleMatch = doubleDigit.matcher(literal);
 
     if (!sinlgeMatch.find() && !doubleMatch.find()) {
       throw new BadHttpVersionException();
@@ -40,7 +40,7 @@ public enum HttpVersion {
     HttpVersion compatible = null;
 
     for (HttpVersion ver : values()) {
-      if (ver.LITTERAL == litteral) {
+      if (ver.LITTERAL == literal) {
         // full support
         return Optional.of(ver);
       }

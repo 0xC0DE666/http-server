@@ -38,11 +38,11 @@ public class HttpVersionTest {
   @Test
   public void getVersion_successDoubleExact() {
     var doubles = new ArrayList<>(Arrays.asList("HTTP/0.9", "HTTP/1.0", "HTTP/1.1"));
-    doubles.forEach((litteral) -> {
+    doubles.forEach((literal) -> {
       try {
-        var actual = HttpVersion.get(litteral).orElseThrow();
+        var actual = HttpVersion.get(literal).orElseThrow();
         assertNotNull(actual);
-        assertEquals(litteral, actual.LITTERAL);
+        assertEquals(literal, actual.LITTERAL);
       } catch (BadHttpVersionException e) {
         fail("failed to get EXACT match HttpVersion.");
       }
@@ -52,11 +52,11 @@ public class HttpVersionTest {
   @Test
   public void getVersion_successSingleExact() {
     var singles = new ArrayList<>(Arrays.asList("HTTP/2", "HTTP/3"));
-    singles.forEach((litteral) -> {
+    singles.forEach((literal) -> {
       try {
-        var actual = HttpVersion.get(litteral).orElseThrow();
+        var actual = HttpVersion.get(literal).orElseThrow();
         assertNotNull(actual);
-        assertEquals(litteral, actual.LITTERAL);
+        assertEquals(literal, actual.LITTERAL);
       } catch (BadHttpVersionException e) {
         fail("failed to get EXACT match HttpVersion.");
       }
