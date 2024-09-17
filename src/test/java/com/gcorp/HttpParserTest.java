@@ -2,11 +2,9 @@ package com.gcorp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -16,10 +14,10 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import com.gcorp.http.HttpParser;
-import com.gcorp.http.exceptions.HttpParsingException;
-import com.gcorp.http.models.HttpRequest;
 import com.gcorp.http.enums.HttpMethod;
 import com.gcorp.http.enums.HttpStatusCode;
+import com.gcorp.http.exceptions.HttpParsingException;
+import com.gcorp.http.models.HttpRequest;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class HttpParserTest {

@@ -1,13 +1,10 @@
 package com.gcorp;
 
 import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.gcorp.config.ConfigManager;
 import com.gcorp.core.ConnectionManager;
-import com.gcorp.http.enums.HttpMethod;
 
 /**
  * HTTP server!
