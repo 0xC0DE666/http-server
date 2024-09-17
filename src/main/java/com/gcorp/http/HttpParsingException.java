@@ -1,5 +1,7 @@
 package com.gcorp.http;
 
+import com.gcorp.http.enums.HttpStatusCode;
+
 public class HttpParsingException extends Exception {
   private final HttpStatusCode status;
 

@@ -1,4 +1,4 @@
-package com.gcorp.http;
+package com.gcorp.http.enums;
 
 public enum HttpStatusCode {
   
@@ -8,6 +8,7 @@ public enum HttpStatusCode {
   URI_TOO_LONG(414, "URI Too Long"),
   // 500 server
   INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
+  VERSION_NOT_SUPPORTED(505, "Version Not Supported"),
   NOT_IMPLEMENTED(501, "Not Implemented"),
   ;
 

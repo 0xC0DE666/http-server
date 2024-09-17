@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
-import com.gcorp.http.HttpMethod;
 import com.gcorp.http.HttpParser;
 import com.gcorp.http.HttpParsingException;
 import com.gcorp.http.HttpRequest;
-import com.gcorp.http.HttpStatusCode;
+import com.gcorp.http.enums.HttpMethod;
+import com.gcorp.http.enums.HttpStatusCode;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class HttpParserTest {

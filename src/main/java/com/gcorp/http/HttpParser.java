@@ -8,6 +8,10 @@ import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gcorp.http.enums.HttpMethod;
+import com.gcorp.http.enums.HttpStatusCode;
+import com.gcorp.http.enums.HttpVersion;
+
 public class HttpParser {
 
   private final static Logger logger = LoggerFactory.getLogger(HttpParser.class);

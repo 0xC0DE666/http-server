@@ -1,5 +1,9 @@
 package com.gcorp.http;
 
+import com.gcorp.http.enums.HttpMethod;
+import com.gcorp.http.enums.HttpStatusCode;
+import com.gcorp.http.enums.HttpVersion;
+
 public class HttpRequest extends HttpMessage {
   private HttpMethod method;
   private String target;

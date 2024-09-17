@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.gcorp.config.ConfigManager;
 import com.gcorp.core.ConnectionManager;
-import com.gcorp.http.HttpMethod;
+import com.gcorp.http.enums.HttpMethod;
 
 /**
  * HTTP server!

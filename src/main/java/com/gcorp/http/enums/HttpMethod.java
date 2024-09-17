@@ -1,4 +1,4 @@
-package com.gcorp.http;
+package com.gcorp.http.enums;
 
 public enum HttpMethod {
   GET, HEAD;
