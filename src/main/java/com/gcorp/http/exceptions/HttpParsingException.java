@@ -1,4 +1,4 @@
-package com.gcorp.http;
+package com.gcorp.http.exceptions;
 
 import com.gcorp.http.enums.HttpStatusCode;
 

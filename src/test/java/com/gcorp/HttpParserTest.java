@@ -16,8 +16,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import com.gcorp.http.HttpParser;
-import com.gcorp.http.HttpParsingException;
-import com.gcorp.http.HttpRequest;
+import com.gcorp.http.exceptions.HttpParsingException;
+import com.gcorp.http.models.HttpRequest;
 import com.gcorp.http.enums.HttpMethod;
 import com.gcorp.http.enums.HttpStatusCode;
 

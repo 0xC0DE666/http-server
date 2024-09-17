@@ -1,3 +1,3 @@
-package com.gcorp.http;
+package com.gcorp.http.models;
 
 public abstract class HttpMessage {}

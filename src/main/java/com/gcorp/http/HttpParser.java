@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import com.gcorp.http.enums.HttpMethod;
 import com.gcorp.http.enums.HttpStatusCode;
 import com.gcorp.http.enums.HttpVersion;
+import com.gcorp.http.exceptions.HttpParsingException;
+import com.gcorp.http.models.HttpRequest;
 
 public class HttpParser {
 
