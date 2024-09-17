@@ -1,17 +1,19 @@
 package com.gcorp.http.models;
 
-import com.gcorp.http.exceptions.HttpParsingException;
 import com.gcorp.http.enums.HttpMethod;
 import com.gcorp.http.enums.HttpStatusCode;
 import com.gcorp.http.enums.HttpVersion;
+import com.gcorp.http.exceptions.BadHttpVersionException;
+import com.gcorp.http.exceptions.HttpParsingException;
 
 public class HttpRequest extends HttpMessage {
   private HttpMethod method;
   private String target;
   private String version;
+  private HttpVersion compatibleVersion;
 
   public HttpMethod getMethod() {
-      return method;
+    return method;
   }
 
   public void setMethod(String name) throws HttpParsingException {
@@ -33,5 +35,19 @@ public class HttpRequest extends HttpMessage {
       throw new HttpParsingException(HttpStatusCode.INTERNAL_SERVER_ERROR);
     }
     this.target = target;
+  }
+
+  public String getVersion() {
+    return version;
+  }
+
+  public HttpVersion getCompatibleVersion() {
+    return compatibleVersion;
+  }
+
+  public void setVersion(String version) throws BadHttpVersionException, HttpParsingException {
+    this.version = version;
+    this.compatibleVersion = HttpVersion.get(version)
+        .orElseThrow(() -> new HttpParsingException(HttpStatusCode.BAD_REQUEST));
   }
 }
