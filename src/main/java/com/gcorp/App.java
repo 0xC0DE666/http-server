@@ -21,7 +21,7 @@ public class App {
       var connMan = new ConnectionManager(conf);
       connMan.start();
     } catch (IOException e) {
-      // TODO: handle properly later
+      // TODO: handle properly later, yes
       e.printStackTrace();
     }
 
