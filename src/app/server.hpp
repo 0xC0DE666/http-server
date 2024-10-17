@@ -79,6 +79,7 @@ public:
     logger = Logger();
   }
 
+  ~Config() {}
 
   string to_string() {
     return std::to_string(port) + " " + public_dir;
@@ -127,6 +128,5 @@ private:
   Logger logger;
   Config* config;
 };
-
 
 #endif

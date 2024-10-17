@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 
-#include "./server.h"
+#include "./server.hpp"
 
 int add(int a, int b) {
   return a + b;

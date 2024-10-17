@@ -1,7 +1,7 @@
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
 
-#include "../app/server.h"
+#include "../app/server.hpp"
 
 // ####################
 // init

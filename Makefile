@@ -12,7 +12,7 @@ all: clean app test;
 
 APP_DIR := $(SRC_DIR)/app
 APP_SRCS = $(wildcard $(APP_DIR)/*.cpp)
-APP_HDRS = $(wildcard $(APP_DIR)/*.h)
+APP_HDRS = $(wildcard $(APP_DIR)/*.hpp)
 APP_OBJS := $(patsubst %.cpp, %.o, $(APP_SRCS))
 APP_OBJS_NO_MAIN := $(patsubst $(APP_DIR)/main.o, , $(APP_OBJS))
 
@@ -34,7 +34,7 @@ clean:
 
 TEST_DIR := $(SRC_DIR)/test
 TEST_SRCS := $(wildcard $(TEST_DIR)/*.cpp)
-TEST_HDRS = $(wildcard $(TEST_DIR)/*.h)
+TEST_HDRS = $(wildcard $(TEST_DIR)/*.hpp)
 TEST_OBJS := $(patsubst %.c, %.o, $(TEST_SRCS))
 
 $(TEST_SRCS):

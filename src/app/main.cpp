@@ -3,7 +3,7 @@
 
 #include "../lib/json.hpp"
 
-#include "./server.h"
+#include "./server.hpp"
 
 using json = nlohmann::json;
 
