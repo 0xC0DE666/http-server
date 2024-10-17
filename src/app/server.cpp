@@ -27,9 +27,7 @@ Config* load_config(string path) {
     json data = json::parse(file);
     // std::cout << data.dump(4) << std::endl;
 
-    conf = new Config;
-    conf->port = data["port"];
-    conf->public_dir = data["public_dir"];
+    conf = new Config(data["port"], data["public_dir"]);
   } catch (const std::runtime_error& e) {
     std::cerr << "Failed to load config: " << e.what() << std::endl;
   }
