@@ -1,5 +1,5 @@
 CC := g++
-C_FLAGS := -g -Wall -Wextra -pthread
+C_FLAGS := -std=c++11 -g -Wall -Wextra -pthread
 
 BIN_DIR := ./bin
 SRC_DIR := ./src
