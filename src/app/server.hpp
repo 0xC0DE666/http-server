@@ -1,19 +1,9 @@
-#include <iostream>
-#include <string>
-
-#include <cstring>
-#include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
-#include "../lib/json.hpp"
 
 #ifndef SERVER_H
 #define SERVER_H
 
 using std::string;
-using nlohmann::json;
 
 int add(int, int);
 

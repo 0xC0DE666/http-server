@@ -1,8 +1,19 @@
+#include <cstdio>
+#include <cstring>
+
 #include <iostream>
 #include <fstream>
 #include <string>
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+#include "../lib/json.hpp"
 #include "./server.hpp"
+
+using nlohmann::json;
 
 int add(int a, int b) {
   return a + b;
