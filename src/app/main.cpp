@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
 
   Config* conf = new Config("/home/damian/dojo/cpp/http-server/src/assets/config.json");
   ConnectionManager* con_man = new ConnectionManager(conf);
+
   con_man->init();
   con_man->run();
 
