@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <cstring>
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -105,17 +104,17 @@ void Config::load(string path) {
 // ####################
 // CONNECTION MANAGER
 // ####################
-ConnectionManager::ConnectionManager(Config* cfg) {
+ClientManager::ClientManager(Config* cfg) {
   config = cfg;
   logger = Logger();
   logger.info("Created connection manager.\n" + config->to_string());
 }
 
-ConnectionManager::~ConnectionManager() {
+ClientManager::~ClientManager() {
   close(server_fd);
 }
 
-void ConnectionManager::init() {
+void ClientManager::init() {
   logger.info("Setting up connection manager.");
   // Creating a socket file descriptor
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -144,7 +143,7 @@ void ConnectionManager::init() {
   logger.info("Done setting up connection manager.");
 }
 
-void ConnectionManager::run() {
+void ClientManager::run() {
   // Listen for incoming connections (max backlog of 3)
   if (listen(server_fd, 3) < 0) {
       logger.error("Listen failed");
@@ -154,24 +153,52 @@ void ConnectionManager::run() {
   }
   logger.info("Server listening on port 127.0.0.1:" + std::to_string(config->port) + "...");
 
-  // Accept an incoming connection
-  int new_socket;
-  if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*) &addrlen)) < 0) {
-      perror("Accept failed");
-      close(server_fd);
-      exit(EXIT_FAILURE);
+  while (true) {
+    // Accept an incoming connection
+    int socket;
+    if ((socket = accept(server_fd, (struct sockaddr*) &address, (socklen_t*) &addrlen)) < 0) {
+        logger.error("Accept failed");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
+    Client* c = new Client(socket);
+    c->run();
+    logger.info("----------------");
   }
+}
 
-  // Receive data from the client
-  char buffer[BUFFER_SIZE] = {0};
-  ssize_t valread = read(new_socket, buffer, BUFFER_SIZE);
-  std::cout << "Received: " << buffer << std::endl;
+// ####################
+// CLIENT
+// ####################
+Client::Client(int sckt) {
+  socket = sckt; 
+  logger.info("Client connected.");
+}
 
-  // Send a response back to the client
-  const char *hello = "Hello from server\n";
-  send(new_socket, hello, strlen(hello), 0);
-  logger.info("Done responding to client.");
+Client::~Client() {
+  close(socket);
+}
 
-  // Close the socket
-  close(new_socket);
+void Client::run() {
+  thread = new std::thread(&Client::exec, this);
+}
+
+void Client::exec() {
+  while (true) {
+    // Receive data from the client
+    char buffer[BUFFER_SIZE] = {0};
+    ssize_t valread = read(socket, buffer, BUFFER_SIZE);
+    logger.info("Received: " + string(buffer));
+
+    // Send a response back to the client
+    const char *hello = "Hello from server\n";
+    send(socket, hello, strlen(hello), 0);
+    logger.info("Done responding to client.");
+
+    if (0 == strcmp(buffer, "exit")) {
+      logger.info("EXIT");
+      break;
+    }
+  }
+  close(socket);
 }

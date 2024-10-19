@@ -1,4 +1,5 @@
 #include <netinet/in.h>
+#include <thread>
 
 #ifndef SERVER_H
 #define SERVER_H
@@ -57,11 +58,11 @@ Config* load_config(string);
 // ####################
 #define BUFFER_SIZE 1024
 
-class ConnectionManager {
+class ClientManager {
 public:
-  ConnectionManager(Config* cfg);
+  ClientManager(Config* cfg);
 
-  ~ConnectionManager();
+  ~ClientManager();
 
   void init();
   void run();
@@ -74,6 +75,27 @@ private:
   struct sockaddr_in address;
   int opt = 1;
   int addrlen = sizeof(address);
+};
+
+// ####################
+// CLIENT
+// ####################
+#define BUFFER_SIZE 1024
+
+class Client {
+public:
+  Client(int sckt);
+
+  ~Client();
+
+  void run();
+
+private:
+  Logger logger;
+  int socket;
+  std::thread* thread;
+
+  void exec();
 };
 
 #endif
