@@ -59,55 +59,35 @@ void Logger::verbose(const string& msg) {
 // ####################
 // CONFIG
 // ####################
-Config::Config() {
-  logger = Logger();
-}
-
-Config::Config(string path) {
-  load(path);
-  logger = Logger();
-}
-
-Config::Config(int prt, string pub_dir) {
-  port = prt;
-  public_dir = pub_dir;
-  logger = Logger();
-}
-
-Config::~Config() {}
-
 string Config::to_string() {
-  return std::to_string(port) + " " + public_dir;
+  return std::to_string(PORT) + " " + PUBLIC_DIR;
 }
 
-void Config::load(string path) {
-  logger.info("Loading config.");
+Config* Config::load(string path) {
   try {
     std::ifstream file(path);
 
     if (!file.is_open()) {
-      logger.error("Failed to open config file!");
+      perror("Failed to open config file!");
     }
 
     json data = json::parse(file);
 
-    port = data["port"];
-    public_dir = data["public_dir"];
-
-    logger.info("Done loading config.");
+    return new Config(data["port"], data["public_dir"]);
   } catch (const std::runtime_error& e) {
-    logger.error("Failed to load config: ");
-    logger.error(e.what());
+    perror("Failed to load config: ");
+    perror(e.what());
   }
+  return nullptr;
 }
 
 // ####################
 // CONNECTION MANAGER
 // ####################
-ClientManager::ClientManager(Config* cfg) {
+ClientManager::ClientManager(const Config* cfg) {
   config = cfg;
   logger = Logger();
-  logger.info("Created connection manager.\n" + config->to_string());
+  logger.info("Created connection manager.\n");
 }
 
 ClientManager::~ClientManager() {
@@ -132,7 +112,7 @@ void ClientManager::init() {
   // Define the server address structure
   address.sin_family = AF_INET;  // IPv4
   address.sin_addr.s_addr = INADDR_ANY;  // Bind to any IP address
-  address.sin_port = htons(config->port);  // Convert port number to network byte order
+  address.sin_port = htons(config->PORT);  // Convert port number to network byte order
 
   // Bind the socket to the specified IP and port
   if (bind(server_fd, (struct sockaddr*) &address, addrlen) < 0) {
@@ -151,7 +131,7 @@ void ClientManager::run() {
       exit(EXIT_FAILURE);
       return;
   }
-  logger.info("Server listening on port 127.0.0.1:" + std::to_string(config->port) + "...");
+  logger.info("Server listening on port 127.0.0.1:" + std::to_string(config->PORT) + "...");
 
   while (true) {
     // Accept an incoming connection

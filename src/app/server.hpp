@@ -34,21 +34,17 @@ public:
 // ####################
 class Config {
 public:
-  int port;
-  string public_dir; 
+  const int PORT;
+  const string PUBLIC_DIR; 
 
-  Config();
-  Config(string path);
-  Config(int prt, string pub_dir);
-
-  ~Config();
+  Config(const int port, const string pub_dir) : PORT(port), PUBLIC_DIR(pub_dir) {};
 
   string to_string();
 
-private:
-  Logger logger;
+  static Config* load(string path);
 
-  void load(string path);
+private:
+  Config();
 };
 
 Config* load_config(string);
@@ -60,7 +56,7 @@ Config* load_config(string);
 
 class ClientManager {
 public:
-  ClientManager(Config* cfg);
+  ClientManager(const Config* cfg);
 
   ~ClientManager();
 
@@ -69,7 +65,7 @@ public:
 
 private:
   Logger logger;
-  Config* config;
+  const Config* config;
 
   int server_fd;
   struct sockaddr_in address;
@@ -138,6 +134,7 @@ namespace Http {
     static const Version v3_0;
 
   private:
+    Version();
     Version(const string litteral, const int major, const int minor) : LITTERAL(litteral), MAJOR(major), MINOR(minor){};
   };
 
@@ -159,6 +156,7 @@ namespace Http {
     static const Status VERSION_NOT_SUPPORTED;
 
   private:
+    Status();
     Status(const int code, const string msg) : CODE(code), MESSAGE(msg) {};
   };
 }
