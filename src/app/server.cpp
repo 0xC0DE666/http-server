@@ -172,11 +172,15 @@ void ClientManager::run() {
 // ####################
 Client::Client(int sckt) {
   socket = sckt; 
+  thread = nullptr;
   logger.info("Client connected.");
 }
 
 Client::~Client() {
   close(socket);
+  if (thread) {
+    delete thread;
+  }
 }
 
 void Client::run() {
@@ -202,3 +206,19 @@ void Client::exec() {
   }
   close(socket);
 }
+
+// ####################
+// HTTP
+// ####################
+const string HttpMethod::HEAD = "HEAD";
+const string HttpMethod::OPTIONS = "OPTIONS";
+const string HttpMethod::CONNECT = "CONNECT";
+const string HttpMethod::TRACE = "TRACE";
+
+const string HttpMethod::GET = "GET";
+const string HttpMethod::POST = "POST";
+const string HttpMethod::PUT = "PUT";
+const string HttpMethod::PATCH = "PATCH";
+const string HttpMethod::DELETE = "DELETE";
+
+const int HttpMethod::MAX_LENGTH = 7;

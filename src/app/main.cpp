@@ -8,6 +8,8 @@
 using json = nlohmann::json;
 
 int main(int argc, char* argv[]) {
+  std::string get = HttpMethod::GET;
+  std::cout << get << std::endl;
   std::cout << "Http Server" << std::endl;
 
   Config* conf = new Config("/home/damian/dojo/cpp/http-server/src/assets/config.json");

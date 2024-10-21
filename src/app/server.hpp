@@ -95,7 +95,31 @@ private:
   int socket;
   std::thread* thread;
 
+  Client();
+
   void exec();
+};
+
+// ####################
+// HTTP
+// ####################
+class HttpMethod {
+public:
+  static const string HEAD;
+  static const string OPTIONS;
+  static const string CONNECT;
+  static const string TRACE;
+
+  static const string GET;
+  static const string POST;
+  static const string PUT;
+  static const string PATCH;
+  static const string DELETE;
+
+  static const int MAX_LENGTH;
+
+private:
+  HttpMethod();
 };
 
 #endif
