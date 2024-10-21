@@ -210,15 +210,27 @@ void Client::exec() {
 // ####################
 // HTTP
 // ####################
-const string HttpMethod::HEAD = "HEAD";
-const string HttpMethod::OPTIONS = "OPTIONS";
-const string HttpMethod::CONNECT = "CONNECT";
-const string HttpMethod::TRACE = "TRACE";
+// METHOD
+const string Http::Method::HEAD = "HEAD";
+const string Http::Method::OPTIONS = "OPTIONS";
+const string Http::Method::CONNECT = "CONNECT";
+const string Http::Method::TRACE = "TRACE";
 
-const string HttpMethod::GET = "GET";
-const string HttpMethod::POST = "POST";
-const string HttpMethod::PUT = "PUT";
-const string HttpMethod::PATCH = "PATCH";
-const string HttpMethod::DELETE = "DELETE";
+const string Http::Method::GET = "GET";
+const string Http::Method::POST = "POST";
+const string Http::Method::PUT = "PUT";
+const string Http::Method::PATCH = "PATCH";
+const string Http::Method::DELETE = "DELETE";
 
-const int HttpMethod::MAX_LENGTH = 7;
+const int Http::Method::MAX_LENGTH = 7;
+
+// STATUS
+// 400 client
+const Http::Status Http::Status::BAD_REQUEST = Http::Status(400, "Bad Request");
+const Http::Status Http::Status::NOT_FOUND = Http::Status(404, "Not Found");
+const Http::Status Http::Status::METHOD_NOT_ALLOWED = Http::Status(405, "Method Not Allowed");
+const Http::Status Http::Status::URI_TOO_LONG = Http::Status(414, "URI Too Long");
+// 500 server
+const Http::Status Http::Status::INTERNAL_SERVER_ERROR = Http::Status(500, "Internal Server Error");
+const Http::Status Http::Status::NOT_IMPLEMENTED = Http::Status(501, "Not Implemented");
+const Http::Status Http::Status::VERSION_NOT_SUPPORTED = Http::Status(505, "Version Not Supported");

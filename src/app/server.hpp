@@ -103,23 +103,45 @@ private:
 // ####################
 // HTTP
 // ####################
-class HttpMethod {
-public:
-  static const string HEAD;
-  static const string OPTIONS;
-  static const string CONNECT;
-  static const string TRACE;
+namespace Http {
+  class Method {
+  public:
+    static const string HEAD;
+    static const string OPTIONS;
+    static const string CONNECT;
+    static const string TRACE;
 
-  static const string GET;
-  static const string POST;
-  static const string PUT;
-  static const string PATCH;
-  static const string DELETE;
+    static const string GET;
+    static const string POST;
+    static const string PUT;
+    static const string PATCH;
+    static const string DELETE;
 
-  static const int MAX_LENGTH;
+    static const int MAX_LENGTH;
 
-private:
-  HttpMethod();
-};
+  private:
+    Method();
+  };
+
+  class Status {
+  public:
+    const int CODE;
+    const string MESSAGE;
+
+    // 400 client
+    static const Status BAD_REQUEST;
+    static const Status NOT_FOUND;
+    static const Status METHOD_NOT_ALLOWED;
+    static const Status URI_TOO_LONG;
+
+    // 500 server
+    static const Status INTERNAL_SERVER_ERROR;
+    static const Status NOT_IMPLEMENTED;
+    static const Status VERSION_NOT_SUPPORTED;
+
+  private:
+    Status(const int code, const string msg) : CODE(code), MESSAGE(msg) {};
+  };
+}
 
 #endif
