@@ -104,6 +104,7 @@ private:
 // HTTP
 // ####################
 namespace Http {
+  // METHOD
   class Method {
   public:
     static const string HEAD;
@@ -123,6 +124,24 @@ namespace Http {
     Method();
   };
 
+  // VERSION
+  class Version {
+  public:
+    const string LITTERAL;
+    const int MAJOR;
+    const int MINOR;
+
+    static const Version v0_9;
+    static const Version v1_0;
+    static const Version v1_1;
+    static const Version v2_0;
+    static const Version v3_0;
+
+  private:
+    Version(const string litteral, const int major, const int minor) : LITTERAL(litteral), MAJOR(major), MINOR(minor){};
+  };
+
+  // STATUS
   class Status {
   public:
     const int CODE;
