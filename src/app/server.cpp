@@ -1,3 +1,4 @@
+#include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -96,17 +97,23 @@ ClientManager::~ClientManager() {
 
 void ClientManager::init() {
   logger.info("Setting up connection manager.");
+  int e;
   // Creating a socket file descriptor
-  if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-      logger.error("Socket failed");
-      exit(EXIT_FAILURE);
+  e = server_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (e == 0) {
+    logger.error("Create socket failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    exit(EXIT_FAILURE);
   }
 
   // Set socket options (optional, but often recommended)
-  if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
-      logger.error("setsockopt");
-      close(server_fd);
-      exit(EXIT_FAILURE);
+  int opt = 1;
+  e = setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+  if (e) {
+    logger.error("Set socket options failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    close(server_fd);
+    exit(EXIT_FAILURE);
   }
 
   // Define the server address structure
@@ -115,31 +122,36 @@ void ClientManager::init() {
   address.sin_port = htons(config->PORT);  // Convert port number to network byte order
 
   // Bind the socket to the specified IP and port
-  if (bind(server_fd, (struct sockaddr*) &address, addrlen) < 0) {
-      logger.error("Bind failed");
-      close(server_fd);
-      exit(EXIT_FAILURE);
+  e = bind(server_fd, (struct sockaddr*) &address, addrlen);
+  if (e < 0) {
+    logger.error("Bind socket failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    close(server_fd);
+    exit(EXIT_FAILURE);
   }
   logger.info("Done setting up connection manager.");
 }
 
 void ClientManager::run() {
   // Listen for incoming connections (max backlog of 3)
-  if (listen(server_fd, 3) < 0) {
-      logger.error("Listen failed");
-      close(server_fd);
-      exit(EXIT_FAILURE);
-      return;
+  int e = listen(server_fd, 3);
+  if (e < 0) {
+    logger.error("Listen failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    close(server_fd);
+    exit(EXIT_FAILURE);
   }
   logger.info("Server listening on port 127.0.0.1:" + std::to_string(config->PORT) + "...");
 
   while (true) {
     // Accept an incoming connection
-    int socket;
-    if ((socket = accept(server_fd, (struct sockaddr*) &address, (socklen_t*) &addrlen)) < 0) {
-        logger.error("Accept failed");
-        close(server_fd);
-        exit(EXIT_FAILURE);
+    int socket = accept(server_fd, (struct sockaddr*) &address, (socklen_t*) &addrlen);
+    e = socket;
+    if (e < 0) {
+      logger.error("Accept socket failed: " + std::to_string(errno));
+      logger.error(strerror(errno));
+      close(server_fd);
+      exit(EXIT_FAILURE);
     }
     Client* c = new Client(socket);
     c->run();
