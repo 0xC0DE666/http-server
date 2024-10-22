@@ -19,9 +19,6 @@ APP_OBJS_NO_MAIN := $(patsubst $(APP_DIR)/main.o, , $(APP_OBJS))
 $(APP_SRCS):
 	$(CC) $(C_FLAGS) -c -o $(patsubst %.cpp, %.o, $@) $@;
 
-main.o:
-	$(CC) $(C_FLAGS) -c -o $(APP_DIR)/main.o $(APP_DIR)/main.cpp;
-
 app: $(APP_OBJS);
 	$(CC) $(C_FLAGS) -o $(BIN_DIR)/$@ $(APP_OBJS);
 
