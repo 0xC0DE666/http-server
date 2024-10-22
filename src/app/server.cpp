@@ -178,7 +178,7 @@ void ClientManager::run() {
   }
   logger.info("Server listening on port 127.0.0.1:" + std::to_string(config->PORT) + "...");
 
-  while (true) {
+  while (socket_bound() && socket_open()) {
     // Accept an incoming connection
     int socket = accept(server_fd, (struct sockaddr*) &address, (socklen_t*) &addrlen);
     e = socket;
@@ -191,6 +191,22 @@ void ClientManager::run() {
     Client* cli = new Client(socket);
     cli->run();
   }
+}
+
+bool ClientManager::socket_open() {
+  return server_fd >= 0;
+}
+
+bool ClientManager::socket_bound() {
+  struct sockaddr_in addr;
+  socklen_t addrlen = sizeof(addr);
+
+  if (getsockname(server_fd, (struct sockaddr*)&addr, &addrlen) == -1) {
+    if (errno == ENOTCONN || errno == EINVAL || errno == EBADF) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // ####################

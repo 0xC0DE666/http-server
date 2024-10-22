@@ -1,6 +1,6 @@
 import {readLines} from "https://deno.land/std/io/mod.ts";
 // Import necessary Deno API
-const addr = {hostname: "127.0.0.1", port: 6969};
+const addr = {hostname: "127.0.0.1", port: 8080};
 
 // Connect to the TCP server
 const conn = await Deno.connect(addr);

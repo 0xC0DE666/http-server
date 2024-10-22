@@ -40,7 +40,6 @@ public:
   Config(const int port, const string pub_dir) : PORT(port), PUBLIC_DIR(pub_dir) {};
 
   string to_string();
-
   static Config* load(string path);
 
 private:
@@ -135,6 +134,9 @@ private:
   int server_fd;
   struct sockaddr_in address;
   int addrlen = sizeof(address);
+
+  bool socket_open();
+  bool socket_bound();
 };
 
 // ####################
