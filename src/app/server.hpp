@@ -50,52 +50,6 @@ private:
 Config* load_config(string);
 
 // ####################
-// CONNECTION MANAGER
-// ####################
-#define BUFFER_SIZE 1024
-
-class ClientManager {
-public:
-  ClientManager(const Config* cfg);
-
-  ~ClientManager();
-
-  void init();
-  void run();
-
-private:
-  Logger logger;
-  const Config* config;
-
-  int server_fd;
-  struct sockaddr_in address;
-  int addrlen = sizeof(address);
-};
-
-// ####################
-// CLIENT
-// ####################
-#define BUFFER_SIZE 1024
-
-class Client {
-public:
-  Client(int sckt);
-
-  ~Client();
-
-  void run();
-
-private:
-  Logger logger;
-  int socket;
-  std::thread* thread;
-
-  Client();
-
-  void exec();
-};
-
-// ####################
 // HTTP
 // ####################
 namespace Http {
@@ -159,5 +113,51 @@ namespace Http {
     Status(const int code, const string msg) : CODE(code), MESSAGE(msg) {};
   };
 }
+
+// ####################
+// CONNECTION MANAGER
+// ####################
+#define BUFFER_SIZE 1024
+
+class ClientManager {
+public:
+  ClientManager(const Config* cfg);
+
+  ~ClientManager();
+
+  void init();
+  void run();
+
+private:
+  Logger logger;
+  const Config* config;
+
+  int server_fd;
+  struct sockaddr_in address;
+  int addrlen = sizeof(address);
+};
+
+// ####################
+// CLIENT
+// ####################
+#define BUFFER_SIZE 1024
+
+class Client {
+public:
+  Client(int sckt);
+
+  ~Client();
+
+  void run();
+
+private:
+  Logger logger;
+  int socket;
+  std::thread* thread;
+
+  Client();
+
+  void exec();
+};
 
 #endif
