@@ -123,7 +123,7 @@ const Http::Status Http::Status::VERSION_NOT_SUPPORTED = Http::Status(505, "Vers
 ClientManager::ClientManager(const Config* cfg) {
   config = cfg;
   logger = Logger();
-  logger.info("Created client manager.\n");
+  logger.info("Created client manager.");
 }
 
 ClientManager::~ClientManager() {
@@ -189,6 +189,7 @@ void ClientManager::run() {
       exit(EXIT_FAILURE);
     }
     Client* cli = new Client(socket);
+    cli->print_info();
     cli->run();
   }
 }
@@ -201,7 +202,8 @@ bool ClientManager::socket_bound() {
   struct sockaddr_in addr;
   socklen_t addrlen = sizeof(addr);
 
-  if (getsockname(server_fd, (struct sockaddr*)&addr, &addrlen) == -1) {
+  int e = getsockname(server_fd, (struct sockaddr*)&addr, &addrlen);
+  if (e < 0) {
     if (errno == ENOTCONN || errno == EINVAL || errno == EBADF) {
       return false;
     }
@@ -213,15 +215,22 @@ bool ClientManager::socket_bound() {
 // CLIENT
 // ####################
 Client::Client(int sckt) {
-  socket = sckt; 
+  client_fd = sckt;
   thread = nullptr;
   logger.info("Client connected.");
 }
 
 Client::~Client() {
-  close(socket);
-  if (thread) {
-    delete thread;
+  // TODO: check this
+  logger.info("Free client");
+  try {
+    close(client_fd);
+    if (thread) {
+      delete thread;
+    }
+  } catch(std::runtime_error& e) {
+    logger.info("AAAAAAAAAAAAAAAAAAAAa");
+    logger.info(e.what());
   }
 }
 
@@ -229,20 +238,38 @@ void Client::run() {
   thread = new std::thread(&Client::exec, this);
 }
 
+void Client::print_info() {
+  struct sockaddr_in addr;
+  socklen_t addr_len = sizeof(addr);
+
+  // Get the client socket information
+  int e = getpeername(client_fd, (struct sockaddr*)&addr, &addr_len);
+  if (e < 0) {
+    logger.error("Print socket info failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    return;
+  }
+  char ip[INET_ADDRSTRLEN];
+  inet_ntop(AF_INET, &addr.sin_addr, ip, sizeof(ip));
+  logger.info("Client IP Address: " + string(ip));
+  logger.info("Client Port: " + std::to_string(ntohs(addr.sin_port)));
+}
+
 void Client::exec() {
   while (true) {
     // Receive data from the client
     char buffer[BUFFER_SIZE] = {0};
-    ssize_t byte_count = read(socket, buffer, BUFFER_SIZE);
+    ssize_t byte_count = read(client_fd, buffer, BUFFER_SIZE);
     if (byte_count < 0) {
       logger.error("Failed to read bytes: " + std::to_string(errno));
       logger.error(strerror(errno));
+      return;
     }
     logger.info("Received: " + string(buffer));
 
     // Send a response back to the client
     const char *hello = "Hello from server\n";
-    send(socket, hello, strlen(hello), 0);
+    send(client_fd, hello, strlen(hello), 0);
     logger.info("Done responding to client.");
 
     if (0 == strcmp(buffer, "exit")) {
@@ -250,5 +277,6 @@ void Client::exec() {
       break;
     }
   }
-  close(socket);
+  // TODO: check this
+  delete this;
 }

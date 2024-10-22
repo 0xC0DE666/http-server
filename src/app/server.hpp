@@ -151,10 +151,11 @@ public:
   ~Client();
 
   void run();
+  void print_info();
 
 private:
   Logger logger;
-  int socket;
+  int client_fd;
   std::thread* thread;
 
   Client();
