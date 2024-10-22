@@ -123,7 +123,7 @@ const Http::Status Http::Status::VERSION_NOT_SUPPORTED = Http::Status(505, "Vers
 ClientManager::ClientManager(const Config* cfg) {
   config = cfg;
   logger = Logger();
-  logger.info("Created connection manager.\n");
+  logger.info("Created client manager.\n");
 }
 
 ClientManager::~ClientManager() {
@@ -131,11 +131,11 @@ ClientManager::~ClientManager() {
 }
 
 void ClientManager::init() {
-  logger.info("Setting up connection manager.");
+  logger.info("Setting up client manager.");
   int e;
   // Creating a socket file descriptor
   e = server_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (e == 0) {
+  if (e <= 0) {
     logger.error("Create socket failed: " + std::to_string(errno));
     logger.error(strerror(errno));
     exit(EXIT_FAILURE);
@@ -164,7 +164,7 @@ void ClientManager::init() {
     close(server_fd);
     exit(EXIT_FAILURE);
   }
-  logger.info("Done setting up connection manager.");
+  logger.info("Done setting up client manager.");
 }
 
 void ClientManager::run() {
@@ -188,9 +188,8 @@ void ClientManager::run() {
       close(server_fd);
       exit(EXIT_FAILURE);
     }
-    Client* c = new Client(socket);
-    c->run();
-    logger.info("----------------");
+    Client* cli = new Client(socket);
+    cli->run();
   }
 }
 
@@ -218,7 +217,11 @@ void Client::exec() {
   while (true) {
     // Receive data from the client
     char buffer[BUFFER_SIZE] = {0};
-    ssize_t valread = read(socket, buffer, BUFFER_SIZE);
+    ssize_t byte_count = read(socket, buffer, BUFFER_SIZE);
+    if (byte_count < 0) {
+      logger.error("Failed to read bytes: " + std::to_string(errno));
+      logger.error(strerror(errno));
+    }
     logger.info("Received: " + string(buffer));
 
     // Send a response back to the client
