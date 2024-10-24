@@ -6,6 +6,9 @@ SRC_DIR := ./src
 
 all: clean app test;
 
+clean:
+	rm -f $(APP_OBJS) $(BIN_DIR)/*;
+
 #------------------------------
 # APP
 #------------------------------
@@ -21,9 +24,6 @@ $(APP_SRCS):
 
 app: $(APP_OBJS);
 	$(CC) $(C_FLAGS) -o $(BIN_DIR)/$@ $(APP_OBJS);
-
-clean:
-	rm -f $(APP_OBJS) $(BIN_DIR)/*;
 
 #------------------------------
 # TESTS
