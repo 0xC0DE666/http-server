@@ -34,8 +34,15 @@ TEST_SRCS := $(wildcard $(TEST_DIR)/*.cpp)
 TEST_HDRS = $(wildcard $(TEST_DIR)/*.hpp)
 TEST_OBJS := $(patsubst %.c, %.o, $(TEST_SRCS))
 
-$(TEST_SRCS):
+$(TEST_SRCS):;
 	$(CC) $(C_FLAGS) -c -o $(patsubst %.c, %.o, $@) $@;
 
 test: $(APP_OBJS_NO_MAIN) $(TEST_OBJS);
 	$(CC) $(C_FLAGS) -lcriterion -o $(BIN_DIR)/$@ $(APP_OBJS_NO_MAIN) $(TEST_OBJS);
+
+#------------------------------
+# RELEASE
+#------------------------------
+
+release: C_FLAGS := -std=c++11 -O3 -pthread -g -Wall -Wextra -DNDDEBUG
+release: clean app test;
