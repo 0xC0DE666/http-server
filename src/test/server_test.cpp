@@ -7,10 +7,10 @@
 // load_config
 // ####################
 Test(load_config, _1) {
-  Config expected = {6969, "/www"};
-  Config* actual = Config::load("/home/damian/dojo/cpp/http-server/src/assets/config.json");
+  Config expected = {8080, ""};
+  Config* actual = Config::load();
   cr_assert_eq(actual->PORT, expected.PORT);
-  cr_assert_eq(actual->PUBLIC_DIR, expected.PUBLIC_DIR);
+  cr_assert_eq(actual->WWW_DIR, expected.WWW_DIR);
 
   delete actual;
 }

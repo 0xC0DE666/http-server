@@ -1,6 +1,7 @@
-#include <cerrno>
+#include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <cerrno>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -61,7 +62,35 @@ void Logger::verbose(const string& msg) {
 // CONFIG
 // ####################
 string Config::to_string() {
-  return std::to_string(PORT) + " " + PUBLIC_DIR;
+  return std::to_string(PORT) + " " + WWW_DIR;
+}
+
+Config* Config::load() {
+  try {
+    const char* str_port = std::getenv("PORT");
+    const char* www_dir = std::getenv("WWW_DIR");
+    if (str_port == nullptr || www_dir == nullptr) {
+      string err = string("Read env vars PORT and WWW_DIR failed: " + std::to_string(errno));
+      perror(err.c_str());
+      perror(strerror(errno));
+
+      return nullptr;
+    }
+
+    int port = std::atoi(str_port);
+    if (port == 0) {
+      string err = string("Convert PORT to int failed: " + std::to_string(errno));
+      perror(err.c_str());
+      perror(strerror(errno));
+
+      return nullptr;
+    }
+    return new Config(port, www_dir);
+  } catch (const std::runtime_error& e) {
+    perror("Failed to load config: ");
+    perror(e.what());
+  }
+  return nullptr;
 }
 
 Config* Config::load(string path) {
@@ -69,12 +98,14 @@ Config* Config::load(string path) {
     std::ifstream file(path);
 
     if (!file.is_open()) {
-      perror("Failed to open config file!");
+
+      string err = string("Open config file failed: " + std::to_string(errno) + "\n" + path);
+      perror(err.c_str());
     }
 
     json data = json::parse(file);
 
-    return new Config(data["port"], data["public_dir"]);
+    return new Config(data["port"], data["www_dir"]);
   } catch (const std::runtime_error& e) {
     perror("Failed to load config: ");
     perror(e.what());

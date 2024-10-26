@@ -10,7 +10,11 @@ using json = nlohmann::json;
 int main(int argc, char* argv[]) {
   std::cout << "Http Server" << std::endl;
 
-  Config* conf = Config::load("/home/damian/dojo/cpp/http-server/src/assets/config.json");
+  Config* conf = Config::load();
+  if (conf == nullptr) {
+    std::cout << "Failed to load config" << std::endl;
+    exit(EXIT_FAILURE);
+  }
   ClientManager* cli_man = new ClientManager(conf);
 
   cli_man->init();

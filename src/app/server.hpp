@@ -35,11 +35,12 @@ public:
 class Config {
 public:
   const int PORT;
-  const string PUBLIC_DIR; 
+  const string WWW_DIR;
 
-  Config(const int port, const string pub_dir) : PORT(port), PUBLIC_DIR(pub_dir) {};
+  Config(const int port, const string pub_dir) : PORT(port), WWW_DIR(pub_dir) {};
 
   string to_string();
+  static Config* load();
   static Config* load(string path);
 
 private:
