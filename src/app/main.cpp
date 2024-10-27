@@ -16,8 +16,6 @@ int main(int argc, char* argv[]) {
     exit(EXIT_FAILURE);
   }
   ClientManager* cli_man = new ClientManager(conf);
-
-  cli_man->init();
   cli_man->run();
 
   delete cli_man;

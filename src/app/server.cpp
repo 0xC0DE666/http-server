@@ -149,104 +149,11 @@ const Http::Status Http::Status::NOT_IMPLEMENTED = Http::Status(501, "Not Implem
 const Http::Status Http::Status::VERSION_NOT_SUPPORTED = Http::Status(505, "Version Not Supported");
 
 // ####################
-// CONNECTION MANAGER
-// ####################
-ClientManager::ClientManager(const Config* cfg) {
-  config = cfg;
-  logger = Logger();
-  logger.info("Created client manager.");
-}
-
-ClientManager::~ClientManager() {
-  close(server_fd);
-}
-
-void ClientManager::init() {
-  logger.info("Setting up client manager.");
-  int e;
-  // Creating a socket file descriptor
-  e = server_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (e <= 0) {
-    logger.error("Create socket failed: " + std::to_string(errno));
-    logger.error(strerror(errno));
-    exit(EXIT_FAILURE);
-  }
-
-  // Set socket options (optional, but often recommended)
-  int opt = 1;
-  e = setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
-  if (e) {
-    logger.error("Set socket options failed: " + std::to_string(errno));
-    logger.error(strerror(errno));
-    close(server_fd);
-    exit(EXIT_FAILURE);
-  }
-
-  // Define the server address structure
-  address.sin_family = AF_INET;  // IPv4
-  address.sin_addr.s_addr = INADDR_ANY;  // Bind to any IP address
-  address.sin_port = htons(config->PORT);  // Convert port number to network byte order
-
-  // Bind the socket to the specified IP and port
-  e = bind(server_fd, (struct sockaddr*) &address, addrlen);
-  if (e < 0) {
-    logger.error("Bind socket failed: " + std::to_string(errno));
-    logger.error(strerror(errno));
-    close(server_fd);
-    exit(EXIT_FAILURE);
-  }
-  logger.info("Done setting up client manager.");
-}
-
-void ClientManager::run() {
-  // Listen for incoming connections (max backlog of 3)
-  int e = listen(server_fd, 3);
-  if (e < 0) {
-    logger.error("Listen failed: " + std::to_string(errno));
-    logger.error(strerror(errno));
-    close(server_fd);
-    exit(EXIT_FAILURE);
-  }
-  logger.info("Server listening on port 127.0.0.1:" + std::to_string(config->PORT) + "...");
-
-  while (socket_bound() && socket_open()) {
-    // Accept an incoming connection
-    int socket = accept(server_fd, (struct sockaddr*) &address, (socklen_t*) &addrlen);
-    e = socket;
-    if (e < 0) {
-      logger.error("Accept socket failed: " + std::to_string(errno));
-      logger.error(strerror(errno));
-      close(server_fd);
-      exit(EXIT_FAILURE);
-    }
-    Client* cli = new Client(socket);
-    cli->print_info();
-    cli->run();
-  }
-}
-
-bool ClientManager::socket_open() {
-  return server_fd >= 0;
-}
-
-bool ClientManager::socket_bound() {
-  struct sockaddr_in addr;
-  socklen_t addrlen = sizeof(addr);
-
-  int e = getsockname(server_fd, (struct sockaddr*)&addr, &addrlen);
-  if (e < 0) {
-    if (errno == ENOTCONN || errno == EINVAL || errno == EBADF) {
-      return false;
-    }
-  }
-  return true;
-}
-
-// ####################
 // CLIENT
 // ####################
-Client::Client(int sckt) {
-  client_fd = sckt;
+Client::Client(int id, int cli_fd) {
+  id = id;
+  client_fd = cli_fd;
   thread = nullptr;
   logger.info("Client connected.");
 }
@@ -305,9 +212,111 @@ void Client::exec() {
 
     if (0 == strcmp(buffer, "exit")) {
       logger.info("EXIT");
+      // exit();
       break;
     }
   }
   // TODO: check this
   delete this;
+}
+
+// ####################
+// CLIENT MANAGER
+// ####################
+ClientManager::ClientManager(const Config* cfg) {
+  logger = Logger();
+  config = cfg;
+  logger.info("Created client manager.");
+  init();
+}
+
+ClientManager::~ClientManager() {
+  close(server_fd);
+}
+
+void ClientManager::run() {
+  // Listen for incoming connections (max backlog of 3)
+  int e = listen(server_fd, 3);
+  if (e < 0) {
+    logger.error("Listen failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    close(server_fd);
+    exit(EXIT_FAILURE);
+  }
+  logger.info("Server listening on port 127.0.0.1:" + std::to_string(config->PORT) + "...");
+
+  while (socket_bound() && socket_open()) {
+    // Accept an incoming connection
+    int client_fd = accept(server_fd, (struct sockaddr*) &address, (socklen_t*) &addrlen);
+    e = client_fd;
+    if (e < 0) {
+      logger.error("Accept socket failed: " + std::to_string(errno));
+      logger.error(strerror(errno));
+      close(server_fd);
+      exit(EXIT_FAILURE);
+    }
+    add_client(client_fd);
+  }
+}
+
+void ClientManager::init() {
+  logger.info("Setting up client manager.");
+  int e;
+  // Creating a socket file descriptor
+  e = server_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (e <= 0) {
+    logger.error("Create socket failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    exit(EXIT_FAILURE);
+  }
+
+  // Set socket options (optional, but often recommended)
+  int opt = 1;
+  e = setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+  if (e) {
+    logger.error("Set socket options failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    close(server_fd);
+    exit(EXIT_FAILURE);
+  }
+
+  // Define the server address structure
+  address.sin_family = AF_INET;  // IPv4
+  address.sin_addr.s_addr = INADDR_ANY;  // Bind to any IP address
+  address.sin_port = htons(config->PORT);  // Convert port number to network byte order
+
+  // Bind the socket to the specified IP and port
+  e = bind(server_fd, (struct sockaddr*) &address, addrlen);
+  if (e < 0) {
+    logger.error("Bind socket failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    close(server_fd);
+    exit(EXIT_FAILURE);
+  }
+  logger.info("Done setting up client manager.");
+}
+
+bool ClientManager::socket_open() {
+  return server_fd >= 0;
+}
+
+bool ClientManager::socket_bound() {
+  struct sockaddr_in addr;
+  socklen_t addrlen = sizeof(addr);
+
+  int e = getsockname(server_fd, (struct sockaddr*)&addr, &addrlen);
+  if (e < 0) {
+    if (errno == ENOTCONN || errno == EINVAL || errno == EBADF) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void ClientManager::add_client(int client_fd) {
+  int id = clients.size();
+  Client* cli = new Client(id, client_fd);
+  clients[id] = cli;
+  cli->print_info();
+  cli->run();
 }

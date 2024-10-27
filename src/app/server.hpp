@@ -1,5 +1,6 @@
-#include <netinet/in.h>
+#include <map>
 #include <thread>
+#include <netinet/in.h>
 
 #ifndef SERVER_H
 #define SERVER_H
@@ -115,6 +116,31 @@ namespace Http {
 }
 
 // ####################
+// CLIENT
+// ####################
+#define BUFFER_SIZE 1024
+
+class Client {
+public:
+  Client(int id, int cli_fd);
+
+  ~Client();
+
+  void run();
+  void print_info();
+
+private:
+  Logger logger;
+  int id;
+  int client_fd;
+  std::thread* thread;
+
+  Client();
+
+  void exec();
+};
+
+// ####################
 // CONNECTION MANAGER
 // ####################
 #define BUFFER_SIZE 1024
@@ -125,43 +151,23 @@ public:
 
   ~ClientManager();
 
-  void init();
   void run();
 
 private:
   Logger logger;
   const Config* config;
+  std::map<int, Client*> clients;
 
   int server_fd;
   struct sockaddr_in address;
   int addrlen = sizeof(address);
 
+  void init();
   bool socket_open();
   bool socket_bound();
-};
 
-// ####################
-// CLIENT
-// ####################
-#define BUFFER_SIZE 1024
-
-class Client {
-public:
-  Client(int sckt);
-
-  ~Client();
-
-  void run();
-  void print_info();
-
-private:
-  Logger logger;
-  int client_fd;
-  std::thread* thread;
-
-  Client();
-
-  void exec();
+  void add_client(int client_fd);
+  void remove_client(int id);
 };
 
 #endif
