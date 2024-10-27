@@ -16,10 +16,6 @@
 
 using nlohmann::json;
 
-int add(int a, int b) {
-  return a + b;
-}
-
 // ####################
 // LOGGER
 // ####################
@@ -116,9 +112,10 @@ Config* Config::load(string path) {
 // ####################
 // CLIENT
 // ####################
-Client::Client(int id, int cli_fd) {
+Client::Client(int id, int cli_fd, std::function<void()> on_cls) {
   id = id;
   client_fd = cli_fd;
+  on_close = on_cls;
   thread = nullptr;
   logger.info("Client connected: " + std::to_string(id));
 }
@@ -126,13 +123,17 @@ Client::Client(int id, int cli_fd) {
 Client::~Client() {
   logger.info("Free client");
   close(client_fd);
-  if (thread) {
-    delete thread;
+  if (thread != nullptr) {
+    logger.info("-- THREAD --");
+    // delete thread;
   }
 }
 
 void Client::run() {
   thread = new std::thread(&Client::exec, this);
+  if (thread && thread->joinable()) {
+    thread->join();
+  }
 }
 
 void Client::print_info() {
@@ -170,9 +171,8 @@ void Client::exec() {
     logger.info("Done responding to client.");
 
     if (0 == strcmp(buffer, "close")) {
-      // TODO: handle client close
-      // in prep for Connection: close header
-      logger.info("CLOSE ");
+      on_close();
+      logger.info("closed client");
       break;
     }
   }
@@ -205,6 +205,7 @@ void ClientManager::run() {
 
   while (socket_bound() && socket_open()) {
     // Accept an incoming connection
+    remove_closed_clients();
     int client_fd = accept(server_fd, (struct sockaddr*) &address, (socklen_t*) &addrlen);
     e = client_fd;
     if (e < 0) {
@@ -272,9 +273,19 @@ bool ClientManager::socket_bound() {
 }
 
 void ClientManager::add_client(int client_fd) {
-  int id = clients.size() + 1;
-  Client* cli = new Client(id, client_fd);
-  clients[id] = cli;
+  int id = open_clients.size() + 1;
+  Client* cli = new Client(id, client_fd, [this, id]() {
+    closed_clients.push_back(id);
+  });
+  open_clients[id] = cli;
   cli->print_info();
   cli->run();
+}
+
+void ClientManager::remove_closed_clients() {
+  for (int i = 0; i < closed_clients.size(); ++i) {
+    int id = closed_clients[i];
+    delete open_clients[id];
+    open_clients.erase(id);
+  }
 }

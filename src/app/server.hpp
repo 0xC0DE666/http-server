@@ -1,4 +1,6 @@
 #include <map>
+#include <vector>
+#include <functional>
 #include <thread>
 #include <netinet/in.h>
 
@@ -6,8 +8,6 @@
 #define SERVER_H
 
 using std::string;
-
-int add(int, int);
 
 // ####################
 // LOGGER
@@ -57,7 +57,7 @@ Config* load_config(string);
 
 class Client {
 public:
-  Client(int id, int cli_fd);
+  Client(int id, int cli_fd, std::function<void()> on_cls);
 
   ~Client();
 
@@ -68,6 +68,7 @@ private:
   Logger logger;
   int id;
   int client_fd;
+  std::function<void()> on_close;
   std::thread* thread;
 
   Client();
@@ -91,7 +92,15 @@ public:
 private:
   Logger logger;
   const Config* config;
-  std::map<int, Client*> clients;
+  std::map<int, Client*> open_clients;
+  std::vector<int> closed_clients;
+  // Implement below thread to wait and accept client connections.
+  // All clients should be joined to this thread.
+  // This thread should be joined to the main thread.
+  std::thread* client_waiter;
+  // (Maybe) Implement below thread to periodically remove closed clients.
+  // This thread should be joined to the main thread.
+  std::thread* client_cleaner;
 
   int server_fd;
   struct sockaddr_in address;
@@ -102,7 +111,7 @@ private:
   bool socket_bound();
 
   void add_client(int client_fd);
-  void remove_client(int id);
+  void remove_closed_clients();
 };
 
 #endif
