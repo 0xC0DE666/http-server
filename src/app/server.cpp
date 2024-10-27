@@ -155,20 +155,14 @@ Client::Client(int id, int cli_fd) {
   id = id;
   client_fd = cli_fd;
   thread = nullptr;
-  logger.info("Client connected.");
+  logger.info("Client connected: " + std::to_string(id));
 }
 
 Client::~Client() {
-  // TODO: check this
   logger.info("Free client");
-  try {
-    close(client_fd);
-    if (thread) {
-      delete thread;
-    }
-  } catch(std::runtime_error& e) {
-    logger.info("AAAAAAAAAAAAAAAAAAAAa");
-    logger.info(e.what());
+  close(client_fd);
+  if (thread) {
+    delete thread;
   }
 }
 
@@ -210,14 +204,13 @@ void Client::exec() {
     send(client_fd, hello, strlen(hello), 0);
     logger.info("Done responding to client.");
 
-    if (0 == strcmp(buffer, "exit")) {
-      logger.info("EXIT");
-      // exit();
+    if (0 == strcmp(buffer, "close")) {
+      // TODO: handle client close
+      // in prep for Connection: close header
+      logger.info("CLOSE ");
       break;
     }
   }
-  // TODO: check this
-  delete this;
 }
 
 // ####################
@@ -314,7 +307,7 @@ bool ClientManager::socket_bound() {
 }
 
 void ClientManager::add_client(int client_fd) {
-  int id = clients.size();
+  int id = clients.size() + 1;
   Client* cli = new Client(id, client_fd);
   clients[id] = cli;
   cli->print_info();
