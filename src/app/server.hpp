@@ -61,7 +61,7 @@ public:
 
   ~Client();
 
-  void run();
+  void start();
   void print_info();
 
 private:
@@ -73,7 +73,7 @@ private:
 
   Client();
 
-  void exec();
+  void run();
 };
 
 // ####################
@@ -87,18 +87,18 @@ public:
 
   ~ClientManager();
 
-  void run();
+  void start();
 
 private:
   Logger logger;
   const Config* config;
   std::map<int, Client*> open_clients;
   std::vector<int> closed_clients;
-  // Implement below thread to wait and accept client connections.
+  // TODO: Implement below thread to wait and accept client connections.
   // All clients should be joined to this thread.
   // This thread should be joined to the main thread.
   std::thread* client_waiter;
-  // (Maybe) Implement below thread to periodically remove closed clients.
+  // TODO: (Maybe) Implement below thread to periodically remove closed clients.
   // This thread should be joined to the main thread.
   std::thread* client_cleaner;
 
@@ -107,6 +107,8 @@ private:
   int addrlen = sizeof(address);
 
   void init();
+  void run();
+
   bool socket_open();
   bool socket_bound();
 

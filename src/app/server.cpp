@@ -125,15 +125,17 @@ Client::~Client() {
   close(client_fd);
   if (thread != nullptr) {
     logger.info("-- THREAD --");
+    // TODO: This crashes the server due to not properly managing thread life cycle. [join/detach]
     // delete thread;
   }
 }
 
-void Client::run() {
-  thread = new std::thread(&Client::exec, this);
-  if (thread && thread->joinable()) {
-    thread->join();
-  }
+void Client::start() {
+  thread = new std::thread(&Client::run, this);
+  // TODO: This blocks the client_waiter thread on 1st client connection.
+  // if (thread && thread->joinable()) {
+  //   thread->join();
+  // }
 }
 
 void Client::print_info() {
@@ -153,7 +155,7 @@ void Client::print_info() {
   logger.info("Client Port: " + std::to_string(ntohs(addr.sin_port)));
 }
 
-void Client::exec() {
+void Client::run() {
   while (true) {
     // Receive data from the client
     char buffer[BUFFER_SIZE] = {0};
@@ -192,29 +194,10 @@ ClientManager::~ClientManager() {
   close(server_fd);
 }
 
-void ClientManager::run() {
-  // Listen for incoming connections (max backlog of 3)
-  int e = listen(server_fd, 3);
-  if (e < 0) {
-    logger.error("Listen failed: " + std::to_string(errno));
-    logger.error(strerror(errno));
-    close(server_fd);
-    exit(EXIT_FAILURE);
-  }
-  logger.info("Server listening on port 127.0.0.1:" + std::to_string(config->PORT) + "...");
-
-  while (socket_bound() && socket_open()) {
-    // Accept an incoming connection
-    remove_closed_clients();
-    int client_fd = accept(server_fd, (struct sockaddr*) &address, (socklen_t*) &addrlen);
-    e = client_fd;
-    if (e < 0) {
-      logger.error("Accept socket failed: " + std::to_string(errno));
-      logger.error(strerror(errno));
-      close(server_fd);
-      exit(EXIT_FAILURE);
-    }
-    add_client(client_fd);
+void ClientManager::start() {
+  client_waiter = new std::thread(&ClientManager::run, this);
+  if (client_waiter && client_waiter->joinable()) {
+    client_waiter->join();
   }
 }
 
@@ -255,6 +238,32 @@ void ClientManager::init() {
   logger.info("Done setting up client manager.");
 }
 
+void ClientManager::run() {
+  // Listen for incoming connections (max backlog of 3)
+  int e = listen(server_fd, 3);
+  if (e < 0) {
+    logger.error("Listen failed: " + std::to_string(errno));
+    logger.error(strerror(errno));
+    close(server_fd);
+    exit(EXIT_FAILURE);
+  }
+  logger.info("Server listening on port 127.0.0.1:" + std::to_string(config->PORT) + "...");
+
+  while (socket_bound() && socket_open()) {
+    // Accept an incoming connection
+    remove_closed_clients();
+    int client_fd = accept(server_fd, (struct sockaddr*) &address, (socklen_t*) &addrlen);
+    e = client_fd;
+    if (e < 0) {
+      logger.error("Accept socket failed: " + std::to_string(errno));
+      logger.error(strerror(errno));
+      close(server_fd);
+      exit(EXIT_FAILURE);
+    }
+    add_client(client_fd);
+  }
+}
+
 bool ClientManager::socket_open() {
   return server_fd >= 0;
 }
@@ -279,7 +288,7 @@ void ClientManager::add_client(int client_fd) {
   });
   open_clients[id] = cli;
   cli->print_info();
-  cli->run();
+  cli->start();
 }
 
 void ClientManager::remove_closed_clients() {
