@@ -123,19 +123,19 @@ Client::Client(int id, int cli_fd, std::function<void()> on_cls) {
 Client::~Client() {
   logger.info("Free client");
   close(client_fd);
-  if (thread != nullptr) {
-    logger.info("-- THREAD --");
-    // TODO: This crashes the server due to not properly managing thread life cycle. [join/detach]
-    // delete thread;
+
+  if (thread && thread->joinable()) {
+    thread->join();
+    delete thread;
   }
 }
 
 void Client::start() {
+  if (thread && thread->joinable()) {
+    thread->join();
+    delete thread;
+  }
   thread = new std::thread(&Client::run, this);
-  // TODO: This blocks the client_waiter thread on 1st client connection.
-  // if (thread && thread->joinable()) {
-  //   thread->join();
-  // }
 }
 
 void Client::print_info() {
