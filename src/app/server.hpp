@@ -53,8 +53,6 @@ Config* load_config(string);
 // ####################
 // CLIENT
 // ####################
-#define BUFFER_SIZE 1024
-
 class Client {
 public:
   Client(int id, int cli_fd, std::function<void()> on_cls);
@@ -79,7 +77,7 @@ private:
 // ####################
 // CONNECTION MANAGER
 // ####################
-#define BUFFER_SIZE 1024
+#define BUFFER_CAPACITY 1024
 
 class ClientManager {
 public:

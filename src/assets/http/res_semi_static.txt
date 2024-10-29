@@ -1,0 +1,17 @@
+HTTP/3 200 
+content-type: application/json; charset=UTF-8
+content-length: 24195
+alt-svc: h3=":443"; ma=86400
+date: Tue, 29 Oct 2024 11:18:57 GMT
+access-control-allow-origin: https://www-v2.qa.mrd.com
+access-control-allow-methods: GET, OPTIONS
+access-control-allow-headers: Content-Type, Api-Key, X-Api-Key, X-User-Id, User-Id, Restaurant-Id, Imei, X-Requested-With, X-Client-Id, X-Client-Version, X-Client-Build-Number, X-Client-Src-Link, X-Platform-Version, Authorization
+cache-control: private,max-age=61,must-revalidate
+trace-id: bacbc735339904456321ead584fb98b8
+etag: "4c27331daa097808beef1b5348c823f3869a2526"
+vary: Accept-Encoding
+content-encoding: gzip
+x-cache: Miss from cloudfront
+via: 1.1 3d823b11a65515de6c99174f31ea0d7a.cloudfront.net (CloudFront)
+x-amz-cf-pop: JNB50-C1
+x-amz-cf-id: v8kpMrHqKeMvfiI21YoVa7DJhleUZwPpI5BjwIRpPkODiiB-kkJ5Xw==

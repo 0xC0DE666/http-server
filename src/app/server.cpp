@@ -157,26 +157,40 @@ void Client::print_info() {
 
 void Client::run() {
   while (true) {
-    // Receive data from the client
-    char buffer[BUFFER_SIZE] = {0};
-    ssize_t byte_count = read(client_fd, buffer, BUFFER_SIZE);
+    char buffer[BUFFER_CAPACITY] = {0};
+    // NOTE: If there is more than 1023 bytes, this reads multiple times.
+    ssize_t byte_count = recv(client_fd, buffer, BUFFER_CAPACITY - 1, 0);
+
+    // Error reading bytes.
     if (byte_count < 0) {
       logger.error("Failed to read bytes: " + std::to_string(errno));
       logger.error(strerror(errno));
       return;
     }
+
+    // Connection closed.
+    if (byte_count == 0) {
+      on_close();
+      return;
+    }
+
+    // Success reading bytes.
+    if (byte_count > 0) {
+      buffer[byte_count] = '\0';
+    }
     logger.info("Received: " + string(buffer));
 
-    // Send a response back to the client
-    const char *hello = "Hello from server\n";
-    send(client_fd, hello, strlen(hello), 0);
-    logger.info("Done responding to client.");
-
+    // Close connection.
     if (0 == strcmp(buffer, "close")) {
       on_close();
       logger.info("closed client");
       break;
     }
+
+    // Send a response back to the client
+    const char *hello = "Hello from server\n";
+    send(client_fd, hello, strlen(hello), 0);
+    logger.info("Done responding to client.");
   }
 }
 

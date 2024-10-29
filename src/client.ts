@@ -17,6 +17,7 @@ async function run() {
       const encoder = new TextEncoder();
       // const message = "Hello from Deno TCP client!";
       const message = line;
+      // const message = new Array(1024).fill("A").join("");
       await conn.write(encoder.encode(message));
       console.log(`Sent message: ${message}`);
 

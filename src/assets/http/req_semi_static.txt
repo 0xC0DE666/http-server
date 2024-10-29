@@ -1,0 +1,21 @@
+GET /landing-items/v3/restaurants/semi_static?lat=-33.9190747&lon=18.4290481&vertical=restaurant&street_number=10&street_name=Rua%20Vasco%20Da%20Gama%20Plain&suburb=Cape%20Town%20City%20Centre&town=Cape%20Town&postal_code=8000 HTTP/3
+Host: api.qa.mrd.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0
+Accept: application/json
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br, zstd
+Referer: https://www-v2.qa.mrd.com/
+x-api-key: 8991c720-203f-4e18-af78-d4b32aa49005
+x-client-id: WEB_APP
+x-client-version: v2.qa.1421
+x-platform-version: Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0
+x-client-build-number: 2420
+Origin: https://www-v2.qa.mrd.com
+DNT: 1
+Sec-GPC: 1
+Connection: keep-alive
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+Priority: u=4
+TE: trailers
