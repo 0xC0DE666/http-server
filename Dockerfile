@@ -10,14 +10,17 @@ WORKDIR /root/app
 COPY ./src ./src
 COPY Makefile .
 RUN mkdir bin;
-RUN make release;
 
-# Run tests
+# Setup env
 ENV PORT=8080
 ENV WWW_DIR=/srv/www
-RUN env;
-RUN ./bin/test;
-
-# Run the application
 EXPOSE 8080
-CMD ["./bin/app"]
+
+# Run tests
+FROM base AS dev
+RUN apt-get install -y inotify-tools;
+RUN make;
+RUN ./bin/test;
+# CMD ["./bin/app"]
+CMD ["sh", "-c", "inotifywait -m -e modify -e move -e create -e delete src | while read; do make; done; && ./bin/app"]
+
