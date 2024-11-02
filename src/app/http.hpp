@@ -6,6 +6,12 @@
 
 using std::string;
 
+namespace Chars {
+  const int SP = 0x20; // 32 ' '
+  const int CR = 0x0D; // 13 '\r'
+  const int LF = 0x0A; // 10 '\n'
+}
+
 namespace Http {
   // METHOD
   class Method {
