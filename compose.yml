@@ -9,8 +9,6 @@ services:
       WWW_DIR: /srv/www
     ports:
       - 8080:8080
-    develop:
-      watch:
-        - path: ./src
-          action: sync
-          target: /root/app/src
+    volumes:
+      - .:/root/app
+    working_dir: /root/app

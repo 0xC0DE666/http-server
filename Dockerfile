@@ -9,6 +9,8 @@ WORKDIR /root/app
 # Copy the application code
 COPY ./src ./src
 COPY Makefile .
+# COPY watch.sh .
+# RUN chmod +x watch.sh;
 RUN mkdir bin;
 
 # Setup env
@@ -18,9 +20,8 @@ EXPOSE 8080
 
 # Run tests
 FROM base AS dev
-RUN apt-get install -y inotify-tools;
-RUN make;
-RUN ./bin/test;
+# RUN apt-get install -y inotify-tools;
+# RUN make;
+# RUN ./bin/test;
 # CMD ["./bin/app"]
-CMD ["sh", "-c", "inotifywait -m -e modify -e move -e create -e delete src | while read; do make; done; && ./bin/app"]
-
+CMD ["sh", "-c", "make && ./bin/app"]
