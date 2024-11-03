@@ -188,7 +188,7 @@ void Client::run() {
     }
 
     // Send a response back to the client
-    const char *hello = "Awe from server!!!\n";
+    const char *hello = "Hello from server\n";
     send(client_fd, hello, strlen(hello), 0);
     logger.info("Done responding to client.");
   }

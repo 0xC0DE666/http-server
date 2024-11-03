@@ -1,6 +1,6 @@
 services:
   # SERVER
-  backend:
+  dev:
     build:
       context: .
       target: dev
